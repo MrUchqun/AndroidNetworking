@@ -8,7 +8,7 @@ import com.android.volley.toolbox.Volley
 class MyApplication : Application() {
 
     companion object {
-        val TAG = MyApplication::class.java.simpleName
+        val TAG: String = MyApplication::class.java.simpleName
         var instance: MyApplication? = null
     }
 
@@ -17,7 +17,7 @@ class MyApplication : Application() {
         instance = this
     }
 
-    val requestQueue: RequestQueue? = null
+    private val requestQueue: RequestQueue? = null
         get() {
             if (field == null) {
                 return Volley.newRequestQueue(applicationContext)

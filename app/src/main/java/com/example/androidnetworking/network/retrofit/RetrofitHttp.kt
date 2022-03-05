@@ -1,6 +1,6 @@
 package com.example.androidnetworking.network.retrofit
 
-import com.example.android_advanced_kotlin.activity.network.volley.VolleyHttp
+import com.example.androidnetworking.network.volley.VolleyHttp
 import com.example.androidnetworking.network.retrofit.services.PosterService
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory

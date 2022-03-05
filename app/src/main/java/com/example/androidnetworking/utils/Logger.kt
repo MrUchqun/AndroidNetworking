@@ -1,7 +1,7 @@
 package com.example.androidnetworking.utils
 
 import android.util.Log
-import com.example.android_advanced_kotlin.activity.network.volley.VolleyHttp.Companion.IS_TESTER
+import com.example.androidnetworking.network.volley.VolleyHttp.Companion.IS_TESTER
 
 class Logger {
 

@@ -1,22 +1,19 @@
-package com.example.android_advanced_kotlin.activity.network.volley
+package com.example.androidnetworking.network.volley
 
-import android.util.Log.d
 import com.android.volley.Response
-import com.android.volley.VolleyLog.d
 import com.android.volley.toolbox.StringRequest
 import com.example.androidnetworking.MyApplication
 import com.example.androidnetworking.model.Poster
-import com.example.androidnetworking.network.volley.VolleyHandler
 import com.example.androidnetworking.utils.Logger
 import org.json.JSONObject
 
 class VolleyHttp {
 
     companion object {
-        val TAG = MyApplication::class.java.simpleName
-        val IS_TESTER = true
-        val SERVER_DEVELOPMENT = "https://jsonplaceholder.typicode.com/"
-        val SERVER_PRODUCTION = "https://jsonplaceholder.typicode.com/"
+        val TAG: String = MyApplication::class.java.simpleName
+        const val IS_TESTER = true
+        const val SERVER_DEVELOPMENT = "https://jsonplaceholder.typicode.com/"
+        const val SERVER_PRODUCTION = "https://6221f0de666291106a17fcdd.mockapi.io/"
 
         fun server(url: String): String {
             if (IS_TESTER)
@@ -61,6 +58,7 @@ class VolleyHttp {
                     Logger.d(TAG, error.toString())
                     volleyHandler.onError(error.toString())
                 }) {
+
                 override fun getHeaders(): MutableMap<String, String> {
                     return headers()
                 }
@@ -127,18 +125,18 @@ class VolleyHttp {
 
         fun paramsCreate(poster: Poster): HashMap<String, Any> {
             val params = HashMap<String, Any>()
-            params.put("title", poster.title)
-            params.put("body", poster.body)
-            params.put("userId", poster.userId)
+            params["title"] = poster.title
+            params["body"] = poster.body
+            params["userId"] = poster.userId
             return params
         }
 
         fun paramsUpdate(poster: Poster): HashMap<String, Any> {
             val params = HashMap<String, Any>()
-            params.put("id", poster.id)
-            params.put("title", poster.title)
-            params.put("body", poster.body)
-            params.put("userId", poster.userId)
+            params["id"] = poster.id
+            params["title"] = poster.title
+            params["body"] = poster.body
+            params["userId"] = poster.userId
             return params
         }
 

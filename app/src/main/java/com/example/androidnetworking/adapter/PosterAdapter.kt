@@ -12,6 +12,7 @@ import com.example.androidnetworking.model.Poster
 
 class PosterAdapter(var activity: MainActivity, var items: ArrayList<Poster>) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val view =
             LayoutInflater.from(parent.context).inflate(R.layout.item_poster_list, parent, false)
@@ -19,8 +20,7 @@ class PosterAdapter(var activity: MainActivity, var items: ArrayList<Poster>) :
     }
 
     class PosterViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        var llPoster: LinearLayout = view.findViewById(R.id.ll_foreground)
-        var llBackground: LinearLayout = view.findViewById(R.id.ll_background)
+        var llForeground: LinearLayout = view.findViewById(R.id.ll_foreground)
         var tvTitle: TextView = view.findViewById(R.id.tv_title)
         var tvBody: TextView = view.findViewById(R.id.tv_body)
     }
@@ -31,8 +31,8 @@ class PosterAdapter(var activity: MainActivity, var items: ArrayList<Poster>) :
             holder.tvTitle.text = item.title.toUpperCase()
             holder.tvBody.text = item.body
 
-            holder.llPoster.setOnLongClickListener {
-                activity.dialogPoster(item)
+            holder.llForeground.setOnLongClickListener {
+                activity.dialogChooseAction(item)
                 true
             }
         }

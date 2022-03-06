@@ -11,7 +11,7 @@ class VolleyHttp {
 
     companion object {
         val TAG: String = MyApplication::class.java.simpleName
-        const val IS_TESTER = true
+        const val IS_TESTER = false
         const val SERVER_DEVELOPMENT = "https://jsonplaceholder.typicode.com/"
         const val SERVER_PRODUCTION = "https://6221f0de666291106a17fcdd.mockapi.io/"
 

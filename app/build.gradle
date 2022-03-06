@@ -50,4 +50,8 @@ dependencies {
 
     // Gson for Parsing
     implementation 'com.google.code.gson:gson:2.9.0'
+
+    //LottieSwipeRefreshLayout
+    implementation 'com.github.nabil6391:LottieSwipeRefreshLayout:1.0.0'
+
 }

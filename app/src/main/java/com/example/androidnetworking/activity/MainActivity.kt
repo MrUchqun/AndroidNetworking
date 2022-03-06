@@ -1,5 +1,6 @@
 package com.example.androidnetworking.activity
 
+import android.annotation.SuppressLint
 import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Build
@@ -25,12 +26,15 @@ import com.example.androidnetworking.utils.Logger
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.gson.Gson
 import com.nabilmh.lottieswiperefreshlayout.LottieSwipeRefreshLayout
+import java.util.*
+import kotlin.collections.ArrayList
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var btnFloating: FloatingActionButton
     private lateinit var swipeRefreshLayout: LottieSwipeRefreshLayout
+    private lateinit var adapter: PosterAdapter
 
     var posters = ArrayList<Poster>()
 
@@ -44,6 +48,7 @@ class MainActivity : AppCompatActivity() {
     private fun initViews() {
         btnFloating = findViewById(R.id.btn_floating)
         swipeRefreshLayout = findViewById(R.id.swipe_refresh)
+        adapter = PosterAdapter(this, posters)
         recyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = GridLayoutManager(this, 1)
 
@@ -52,12 +57,25 @@ class MainActivity : AppCompatActivity() {
         }
 
         swipeRefreshLayout.setOnRefreshListener {
-            Handler().postDelayed({
-                stopLoading()
-                apiPosterList()
-            }, 2000)
+            apiPosterList()
         }
 
+    }
+
+    fun refreshAdapter() {
+        recyclerView.adapter = adapter
+    }
+
+    private fun aboutConnection(text: String?, isVisible: Boolean) {
+        val tvAbout: TextView = findViewById(R.id.tv_about_connection)
+        tvAbout.text = text
+        if (isVisible) {
+            recyclerView.visibility = View.INVISIBLE
+            tvAbout.visibility = View.VISIBLE
+        } else {
+            recyclerView.visibility = View.VISIBLE
+            tvAbout.visibility = View.GONE
+        }
     }
 
     private fun playLoading() {
@@ -68,24 +86,32 @@ class MainActivity : AppCompatActivity() {
         swipeRefreshLayout.isRefreshing = false
     }
 
-    fun refreshAdapter(posters: ArrayList<Poster>) {
-        recyclerView.adapter = PosterAdapter(this, posters)
-    }
-
     private fun apiPosterList() {
         playLoading()
         VolleyHttp.get(VolleyHttp.API_LIST_POST, VolleyHttp.paramsEmpty(), object : VolleyHandler {
             override fun onSuccess(response: String?) {
                 val postArray = Gson().fromJson(response, Array<Poster>::class.java)
+
                 posters.clear()
-                posters.addAll(postArray)
-                refreshAdapter(posters)
+                posters.addAll(postArray.reversed())
+                refreshAdapter()
                 stopLoading()
+
+                if (posters.size == 0) {
+                    aboutConnection(
+                        "You haven't got post. For create new post, click plus button!",
+                        true
+                    )
+                } else {
+                    aboutConnection(null, false)
+                }
+
             }
 
             override fun onError(error: String?) {
                 Logger.e("@@@apiPosterList/error", error!!)
                 stopLoading()
+                aboutConnection("Oops! No connection with internet!", true)
             }
 
         })
@@ -93,10 +119,14 @@ class MainActivity : AppCompatActivity() {
 
     private fun apiPosterDelete(poster: Poster) {
         playLoading()
+
         VolleyHttp.del(VolleyHttp.API_DELETE_POST + poster.id, object : VolleyHandler {
+            @SuppressLint("NotifyDataSetChanged")
             override fun onSuccess(response: String?) {
                 Logger.d("@@@apiPosterDelete", response!!)
-                apiPosterList()
+                posters.remove(poster)
+                adapter.notifyDataSetChanged()
+                stopLoading()
             }
 
             override fun onError(error: String?) {
@@ -125,15 +155,18 @@ class MainActivity : AppCompatActivity() {
             })
     }
 
-    private fun apiPosterUpdate(poster: Poster) {
+    private fun apiPosterUpdate(poster: Poster, position: Int) {
         playLoading()
         VolleyHttp.put(
             VolleyHttp.API_UPDATE_POST + poster.id,
             VolleyHttp.paramsUpdate(poster),
             object : VolleyHandler {
+                @SuppressLint("NotifyDataSetChanged")
                 override fun onSuccess(response: String?) {
                     Logger.d("@@@apiPosterUpdate", response!!)
-                    apiPosterList()
+                    posters[position] = poster
+                    adapter.notifyDataSetChanged()
+                    stopLoading()
                 }
 
                 override fun onError(error: String?) {
@@ -144,7 +177,7 @@ class MainActivity : AppCompatActivity() {
             })
     }
 
-    fun dialogChooseAction(poster: Poster?) {
+    fun dialogChooseAction(poster: Poster?, position: Int) {
         val input: View =
             LayoutInflater.from(this).inflate(R.layout.choose_action_dialog, null, false)
 
@@ -156,7 +189,7 @@ class MainActivity : AppCompatActivity() {
         optionDialog.show()
 
         tvEdit.setOnClickListener {
-            dialogPosterUpdate(poster)
+            dialogPosterUpdate(poster, position)
             optionDialog.dismiss()
         }
 
@@ -177,7 +210,7 @@ class MainActivity : AppCompatActivity() {
             .show()
     }
 
-    private fun dialogPosterUpdate(poster: Poster?) {
+    private fun dialogPosterUpdate(poster: Poster?, position: Int) {
 
         val input: View =
             LayoutInflater.from(this).inflate(R.layout.create_poster_dialog, null, false)
@@ -195,7 +228,7 @@ class MainActivity : AppCompatActivity() {
             .setPositiveButton(android.R.string.yes) { _, _ ->
                 poster.title = etTitle.text.toString()
                 poster.body = etBody.text.toString()
-                apiPosterUpdate(poster)
+                apiPosterUpdate(poster, position)
             }
             .setNegativeButton(android.R.string.no, null)
             .show()

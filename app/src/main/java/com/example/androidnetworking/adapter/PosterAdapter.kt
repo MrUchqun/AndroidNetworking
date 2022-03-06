@@ -32,7 +32,7 @@ class PosterAdapter(var activity: MainActivity, var items: ArrayList<Poster>) :
             holder.tvBody.text = item.body
 
             holder.llForeground.setOnLongClickListener {
-                activity.dialogChooseAction(item)
+                activity.dialogChooseAction(item, position)
                 true
             }
         }
